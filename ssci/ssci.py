@@ -106,7 +106,10 @@ def copy_additional_files():
             src = os.path.join(ADD_PATH, path)
             trg = os.path.join(LOCAL_PATH, path)
             print(f'Copyind additional {src} to {trg}')
-            shutil.copytree(src, trg, dirs_exist_ok=True)
+            if os.path.isdir(src):
+                shutil.copytree(src, trg, dirs_exist_ok=True)
+            else:
+                shutil.copy(src, trg)
 
 
 def main():
