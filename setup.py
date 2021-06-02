@@ -1,0 +1,33 @@
+from setuptools import setup, find_packages
+
+REQUIREMENTS = [
+    "gitpython<4",
+    "requests<3",
+    "decleverett==0.0.0",
+    "pyjackson<0.1.0",
+    "click<9.0.0",
+    "pyyaml<6.0.0",
+    "Jinja2<4",
+    "docker<6"
+]
+
+config = dict(
+    name='ssci',
+    version='0.0.0',
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
+    url='https://github.com/mike0sv/ssci',
+    license='',
+    author='mike0sv',
+    author_email='mike0sv@gmail.com',
+    description='Shit&Sticks CI',
+    install_requires=REQUIREMENTS,
+    extras_require={},
+    data_files=[],
+    test_suite="pytest",
+    tests_require=["pytest-runner"],
+    entry_points={"console_scripts": ["ssci = ssci.cli.main:cli"]}
+)
+
+if __name__ == '__main__':
+    setup(**config)
