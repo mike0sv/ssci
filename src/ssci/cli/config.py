@@ -1,18 +1,21 @@
 import contextlib
 import os
 from pprint import pprint
-from typing import Optional
+from typing import Optional, Type
 
 import click
 import yaml
 from pyjackson import deserialize
-from pyjackson.utils import resolve_subtype, get_class_fields
+from pyjackson._typing_utils import is_union
+from pyjackson.utils import get_class_fields, resolve_subtype
 
-from .main import cli
-from .utils import get_project
+from ..abc import Configurable
 from ..config import DeployConfig, SSCIConf
 from ..deployment import Deployment
+from ..runtime.checks.base import Check
 from ..runtime.notifications.base import Notifier
+from .main import cli
+from .utils import get_project
 
 
 @contextlib.contextmanager
@@ -111,19 +114,32 @@ def show(project):
             click.echo(p)
 
 
+def create_configurable(cls: Type[Configurable], kind):
+    kind = cls.KNOWN.get(kind, kind)
+    args = {'type': kind}
+    clazz = resolve_subtype(cls, args)
+    for field in get_class_fields(clazz):
+        try:
+            cast = field.type.__args__[0] if is_union(field.type) else field.type
+            args[field.name] = cast(click.prompt(f'{field.name} value?', default=field.default))
+        except ValueError:
+            raise NotImplementedError(f'Not yet implemented for type {field.type}')
+    return deserialize(args, cls)
+
+
 @cli.command()
 @click.argument('kind', default='telegram')
 def notification(kind):
     cfg = DeployConfig.load()
 
-    kind = Notifier.KNOWN.get(kind, kind)
-    args = {'type': kind}
-    clazz = resolve_subtype(Notifier, args)
-    for field in get_class_fields(clazz):
-        if field.type == str or field.type == Optional[str]:
-            args[field.name] = click.prompt(f'{field.name} value?', default=field.default)
-        else:
-            raise NotImplementedError('Not yet')
+    cfg.notifications.append(create_configurable(Notifier, kind))
+    cfg.save()
 
-    cfg.notifications.append(deserialize(args, Notifier))
+
+@cli.command()
+@click.argument('project')
+@click.argument('kind')
+def addcheck(project, kind):
+    cfg = DeployConfig.load()
+    cfg.get_project(project).checks.append(create_configurable(Check, kind))
     cfg.save()

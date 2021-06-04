@@ -1,9 +1,11 @@
 import os
 from dataclasses import dataclass
 from functools import cached_property
+from typing import List
 
-from git import Repo
+from git import Remote, Repo
 
+from ssci.runtime.checks.base import Check
 from ssci.runtime.conf import Runtime
 
 
@@ -15,6 +17,7 @@ class Deployment:
     project_name: str = None
     add_dir: str = None
     dind: bool = False
+    checks: List[Check] = tuple()
 
     @property
     def add_abs(self):
@@ -35,3 +38,10 @@ class Deployment:
     @property
     def hexsha(self):
         return self.repo.head.commit.hexsha[:8]
+
+    def run_checks(self):
+        remote: Remote = self.repo.remote('origin')
+        remote.update()
+        commit = remote.refs[0].commit.hexsha
+        for check in self.checks:
+            check.check(self, commit)

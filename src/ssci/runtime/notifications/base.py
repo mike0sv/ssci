@@ -5,9 +5,11 @@ from typing import List
 
 from pyjackson.decorators import type_field
 
+from ssci.abc import Configurable
+
 
 @type_field('type')
-class Notifier(ABC):
+class Notifier(ABC, Configurable):
     type = ...
 
     KNOWN = {
