@@ -57,16 +57,3 @@ class PipelineFinished(Check, ABC):
     def gl(self) -> Gitlab:
         return Gitlab(self.gitlab_host, self.private_token, self.oauth_token)
 
-
-def main():
-    c = PipelineFinished('https://gl.sbdagroup.com',
-                         'https://gl.sbdagroup.com/m.sveshnikov/ssci_test',
-                         private_token='hWDRVSNE4mxaqiKHHqoM', )
-
-    deployment = Deployment('https://gl.sbdagroup.com/m.sveshnikov/ssci_test',
-                            'docker-compose up -d --build --remove-orphans')
-    c.check(deployment, "b6b3cbb5")
-
-
-if __name__ == '__main__':
-    main()
