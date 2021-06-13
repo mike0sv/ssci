@@ -10,7 +10,7 @@ from ..deployment import Deployment
 from ..log import logger
 from .utils import check_new_commits, print_git_error
 from .notifications.base import Notifier
-from .utils import run_with_logs
+from .utils import run_with_logs, run_detached
 
 
 def copy_additional_files(project: Deployment):
@@ -26,11 +26,15 @@ def copy_additional_files(project: Deployment):
 
 
 def build(repo: Deployment, notifier: Notifier):
-    cmd = f'cd {repo.local_path} && {repo.build_cmd}'
+    cmd = f'cd {repo.local_path} && ({repo.build_cmd})'
     logger.info(f'Builing repo with {cmd}')
-    notifier.notify(f'Building {repo.name} from commit {repo.hexsha} on branch {repo.branch}')
+    notifier.notify(f'Building {repo.name} from commit {repo.hexsha} by {repo.repo.commit().author.name} on branch {repo.branch}')
 
-    rc = run_with_logs(cmd)
+    if repo.build_detached:
+        rc = run_detached(cmd, repo.build_detched_timeout)
+    else:
+        rc = run_with_logs(cmd)
+
     logger.info('Done with code %s', rc)
     if rc == 0:
         notifier.notify(f'Build {repo.name} [{repo.hexsha}] succeeded')
@@ -42,7 +46,7 @@ def init_project(project: Deployment, notifier: Notifier, with_build=True):
     if not os.path.isdir(project.local_path) or len(os.listdir(project.local_path)) == 0:
         with print_git_error():
             logger.info(f'Initializing new {project.name} repo at {project.local_path}')
-            repo = Repo.clone_from(project.repo_url, project.local_path)
+            repo = Repo.clone_from(project.url, project.local_path)
             logger.info(f'Checking out branch {project.branch}')
             repo.git.checkout(project.branch)
         copy_additional_files(project)
@@ -52,7 +56,7 @@ def init_project(project: Deployment, notifier: Notifier, with_build=True):
         with print_git_error():
             logger.info(f'Found existing repo at {project.local_path}')
             repo = project.repo
-            if project.repo_url not in set(repo.remote('origin').urls):
+            if project.url not in set(repo.remote('origin').urls):
                 raise ValueError('Wrong origin url, please recreate container')
             logger.info(f'Checking out branch {project.branch}')
             repo.git.checkout(project.branch)

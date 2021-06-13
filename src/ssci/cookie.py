@@ -17,4 +17,5 @@ def render(cfg: DeployConfig):
                            dind=any(p.dind for p in cfg.projects),
                            repo=os.path.abspath(Runtime.REPO_DIR),
                            abs_conf=os.path.abspath(SSCIConf.CONFIG_PATH),
-                           conf=SSCIConf.CONFIG_PATH)
+                           conf=SSCIConf.CONFIG_PATH,
+                           keys=SSCIConf.KEYS_DIR)

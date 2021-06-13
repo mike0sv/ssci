@@ -1,5 +1,6 @@
 import contextlib
 import subprocess
+import time
 
 from git import GitCommandError
 
@@ -43,3 +44,13 @@ def run_with_logs(cmd):
         if poll is not None:
             break
     return process.poll()
+
+
+def run_detached(cmd, timeout):
+    logger.info(f'Waiting {timeout} seconds...')
+    process = subprocess.Popen(cmd, shell=True)
+    start = time.time()
+    while time.time() - timeout < start:
+        time.sleep(1)
+        rc = process.poll()
+    return rc or 0

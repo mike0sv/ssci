@@ -21,6 +21,7 @@ class SSCIConf(Config):
     REBUILD_MARKER = Param(default='.rebuild')
     SERVICE_NAME = Param(default=os.path.basename(os.path.abspath('.')))
     DEPLOY = Param(default='', parser=dict)
+    KEYS_DIR = Param(default='keys')
 
 
 YamlEnv = add_yaml_source(SSCIConf.CONFIG_PATH)
@@ -45,7 +46,7 @@ class DeployConfig:
         try:
             with open(path, 'r') as f:
                 data = yaml.safe_load(f)
-        except KeyboardInterrupt:
+        except FileNotFoundError:
             data = {'ssci': {}}
 
         data['ssci']['deploy'] = serialize(self)

@@ -18,6 +18,18 @@ class Deployment:
     add_dir: str = None
     dind: bool = False
     checks: List[Check] = tuple()
+    key_file: str = None
+    build_detached: bool = False
+    build_detched_timeout: float = 10
+
+    @property
+    def url(self):
+        if self.key_file is not None:
+            from ssci.cli.github import host_name
+            owner, name = os.path.split(self.repo_url)
+            _, owner = os.path.split(owner)
+            return f'git@{host_name(self)}:{owner}/{name}'
+        return self.repo_url
 
     @property
     def add_abs(self):
