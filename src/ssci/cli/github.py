@@ -60,7 +60,7 @@ def patch(project: Deployment, config_path: str):
     conf = f"""
 Host {host_name(project)}
     HostName {urlparse(project.repo_url).netloc}
-    IdentityFile {key_path(project)}
+    IdentityFile {os.path.abspath(key_path(project))}
     """
     try:
         with open(config_path, 'r') as f:
