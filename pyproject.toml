@@ -1,0 +1,7 @@
+[tool.isort]
+profile = "black"
+known_third_party = ["click", "decleverett", "git", "gitlab", "jinja2", "pyjackson", "requests", "setuptools", "ssci", "yaml"]
+
+
+[tool.black]
+line-length = 88

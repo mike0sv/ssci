@@ -1,10 +1,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-
-from pyjackson.decorators import type_field
-
 from typing import TYPE_CHECKING
 
+from pyjackson.decorators import type_field
 from ssci.abc import Configurable
 
 if TYPE_CHECKING:
@@ -18,10 +16,8 @@ class CheckNotPassed(Exception):
 
 @type_field("type")
 class Check(ABC, Configurable):
-    KNOWN = {
-        'gitlab': 'ssci.runtime.checks.gitlab_job.PipelineFinished'
-    }
+    KNOWN = {"gitlab": "ssci.runtime.checks.gitlab_job.PipelineFinished"}
 
     @abstractmethod
-    def check(self, project: 'Deployment', commit: str):
+    def check(self, project: "Deployment", commit: str):
         """"""

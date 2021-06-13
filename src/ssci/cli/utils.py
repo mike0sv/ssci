@@ -1,17 +1,16 @@
 from functools import wraps
 
 import click
+from ssci.config import DeployConfig
 
-from ssci.config import DeployConfig, Deployment
 
-
-def with_project( required=False, include_cfg=False, allow_one=True):
+def with_project(required=False, include_cfg=False, allow_one=True):
     def outer(f):
-        @click.argument('project', default='' if allow_one else None)
+        @click.argument("project", default="" if allow_one else None)
         @wraps(f)
         def inner(project, *args, **kwargs):
             cfg = DeployConfig.load()
-            if project =='' and allow_one and len(cfg.projects) == 1:
+            if project == "" and allow_one and len(cfg.projects) == 1:
                 p = cfg.projects[0]
             else:
                 p = get_project(project, cfg=cfg)
@@ -32,7 +31,9 @@ def get_project(name: str, index=False, cfg: DeployConfig = None):
     cfg = cfg or DeployConfig.load()
     indexes = [i for i, p in enumerate(cfg.projects) if p.name == name]
     if len(indexes) == 0:
-        click.echo(f'No projects with name {name} found. To list projects, use ssci show')
+        click.echo(
+            f"No projects with name {name} found. To list projects, use ssci show"
+        )
         raise click.Abort()
     pi = indexes[0]
     if index:

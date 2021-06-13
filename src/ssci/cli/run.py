@@ -1,8 +1,9 @@
-from .main import cli
-from .utils import with_project
 from ..config import DeployConfig
 from ..deployment import Deployment
-from ..runtime.main import main, build as build_proj
+from ..runtime.main import build as build_proj
+from ..runtime.main import main
+from .main import cli
+from .utils import with_project
 
 
 @cli.command()

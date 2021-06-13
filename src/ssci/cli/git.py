@@ -3,36 +3,36 @@ import shutil
 
 import click
 
-from .main import cli
-from .utils import get_project
 from ..config import DeployConfig
 from ..runtime.conf import Runtime
 from ..runtime.main import copy_additional_files, init_project
+from .main import cli
+from .utils import get_project
 
 
 @cli.command()
-@click.argument('project', default='')
+@click.argument("project", default="")
 def pull(project):
     cfg = DeployConfig.load()
-    if project == '':
-        click.echo('Going to pull all projects')
+    if project == "":
+        click.echo("Going to pull all projects")
         to_pull = cfg.projects
     else:
-        click.echo(f'Going to pull project {project}')
+        click.echo(f"Going to pull project {project}")
         to_pull = [p for p in cfg.projects if p.name == project]
     if len(to_pull) == 0:
-        click.echo('No projects found')
+        click.echo("No projects found")
 
     for p in to_pull:
         init_project(p, cfg.notifier, False)
 
 
 @cli.command()
-@click.argument('project', default='')
+@click.argument("project", default="")
 def readd(project):
     cfg = DeployConfig.load()
     # FIXME check if stopped
-    if project == '':
+    if project == "":
         click.echo("Readding all projects")
         projects = cfg.projects
     else:
@@ -44,10 +44,10 @@ def readd(project):
 
 
 @cli.command()
-@click.argument('project', default='')
+@click.argument("project", default="")
 def clean(project):
     # FIXME check if stopped
-    if project == '':
+    if project == "":
         click.echo("Cleaning all projects")
         shutil.rmtree(Runtime.REPO_DIR, ignore_errors=True)
     else:

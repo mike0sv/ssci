@@ -1,3 +1,3 @@
-from . import main, config, git, run, dc, github
+from . import config, dc, git, github, main, run
 
-__all__ = ['config', 'run', 'git', 'main', 'dc', 'github']
+__all__ = ["config", "run", "git", "main", "dc", "github"]

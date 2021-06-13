@@ -6,7 +6,7 @@ docker and docker-compose are avaliable to use, if you need something else, feel
 
 Everything can be configured via env variables.
 
-To run ssci use example docker-compose 
+To run ssci use example docker-compose
 ```
 version: "3.7"
 
@@ -19,17 +19,17 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./repo:${PWD}/repo
-      
+
  ```
- 
+
  or this one-liner
- 
+
  ```
  docker run --name ssci --restart=unless-stopped --env-file template.env -e HOST_DIR=$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd)/repo:$(pwd)/repo mike0sv/ssci:latest
  ```
- 
+
  # Config envs
- 
+
 - HOST_DIR - used to replicate absolute repo path inside container, set it to `${PWD}` in env file for compose or to `$(pwd)` in docker run
 - REPO_URL - git remote url to poll
 - REPO_BRANCH - git branch, default master

@@ -1,20 +1,17 @@
 import traceback
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List
 
 from pyjackson.decorators import type_field
-
 from ssci.abc import Configurable
 
 
-@type_field('type')
+@type_field("type")
 class Notifier(ABC, Configurable):
     type = ...
 
-    KNOWN = {
-        'telegram': 'ssci.runtime.notifications.telegram.TelegramNotifier'
-    }
+    KNOWN = {"telegram": "ssci.runtime.notifications.telegram.TelegramNotifier"}
 
     @abstractmethod
     def notify(self, msg):

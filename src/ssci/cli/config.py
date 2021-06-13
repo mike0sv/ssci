@@ -1,7 +1,7 @@
 import contextlib
 import os
 from pprint import pprint
-from typing import Optional, Type
+from typing import Type
 
 import click
 import yaml
@@ -26,7 +26,7 @@ def load_save_config():
     except FileNotFoundError:
         data = {}
     yield data
-    with open(SSCIConf.CONFIG_PATH, 'w') as f:
+    with open(SSCIConf.CONFIG_PATH, "w") as f:
         yaml.safe_dump(data, f)
 
 
@@ -37,38 +37,40 @@ def config():
 
 
 @cli.command()
-@click.argument('option')
-@click.argument('value')
+@click.argument("option")
+@click.argument("value")
 def set(option, value):
     with load_save_config() as data:
-        get = data.get('ssci', {})
+        get = data.get("ssci", {})
         get[option] = value
-        data['ssci'] = get
+        data["ssci"] = get
 
 
 @cli.command()
 def new():
     cfg = DeployConfig.load()
 
-    repo_url = click.prompt('Remote git repo url?')
+    repo_url = click.prompt("Remote git repo url?")
     name = None
     while name is None or any(d.name == name for d in cfg.projects):
-        name = click.prompt('Name of deployment?', default=os.path.basename(repo_url))
+        name = click.prompt("Name of deployment?", default=os.path.basename(repo_url))
         if any(d.name == name for d in cfg.projects):
-            click.echo('Deployment with that name already exists')
+            click.echo("Deployment with that name already exists")
 
-    branch = click.prompt('Branch to deploy?', default='main')
-    dind = click.confirm('Do you need dind?', default=True)
-    build_cmd = click.prompt('Enter build command:',
-                             default='docker-compose up --build -d --remove-orphans' if dind else '')
-    add_dir = click.prompt('Dir with additional files:', default='')
+    branch = click.prompt("Branch to deploy?", default="main")
+    dind = click.confirm("Do you need dind?", default=True)
+    build_cmd = click.prompt(
+        "Enter build command:",
+        default="docker-compose up --build -d --remove-orphans" if dind else "",
+    )
+    add_dir = click.prompt("Dir with additional files:", default="")
     deploy = Deployment(
         repo_url=repo_url,
         build_cmd=build_cmd,
         branch=branch,
         project_name=name,
         add_dir=add_dir if add_dir else None,
-        dind=dind
+        dind=dind,
     )
 
     cfg.projects.append(deploy)
@@ -76,7 +78,7 @@ def new():
 
 
 @cli.command()
-@click.argument('project')
+@click.argument("project")
 def remove(project):
     cfg = DeployConfig.load()
     index = get_project(project, index=True)
@@ -86,49 +88,51 @@ def remove(project):
 
 
 @cli.command()
-@click.argument('project')
-@click.argument('branch')
+@click.argument("project")
+@click.argument("branch")
 def switch(project, branch):
     cfg = DeployConfig.load()
     p = get_project(project)
-    click.echo(f'Switched project {project} to branch {branch}')
+    click.echo(f"Switched project {project} to branch {branch}")
     p.branch = branch
     cfg.save()
 
 
 @cli.command()
-@click.argument('project', default='')
+@click.argument("project", default="")
 def show(project):
     cfg = DeployConfig.load()
 
-    if project == '':
-        click.echo('------Projects--------')
-        click.echo('\n'.join('* ' + p.project_name for p in cfg.projects))
-        click.echo('----------------------')
+    if project == "":
+        click.echo("------Projects--------")
+        click.echo("\n".join("* " + p.project_name for p in cfg.projects))
+        click.echo("----------------------")
     else:
         p = cfg.get_project(project)
         if p is None:
-            click.echo(f'No such project {project}')
+            click.echo(f"No such project {project}")
         else:
-            click.echo(f'Project {project}')
+            click.echo(f"Project {project}")
             click.echo(p)
 
 
 def create_configurable(cls: Type[Configurable], kind):
     kind = cls.KNOWN.get(kind, kind)
-    args = {'type': kind}
+    args = {"type": kind}
     clazz = resolve_subtype(cls, args)
     for field in get_class_fields(clazz):
         try:
             cast = field.type.__args__[0] if is_union(field.type) else field.type
-            args[field.name] = cast(click.prompt(f'{field.name} value?', default=field.default))
+            args[field.name] = cast(
+                click.prompt(f"{field.name} value?", default=field.default)
+            )
         except ValueError:
-            raise NotImplementedError(f'Not yet implemented for type {field.type}')
+            raise NotImplementedError(f"Not yet implemented for type {field.type}")
     return deserialize(args, cls)
 
 
 @cli.command()
-@click.argument('kind', default='telegram')
+@click.argument("kind", default="telegram")
 def notification(kind):
     cfg = DeployConfig.load()
 
@@ -137,8 +141,8 @@ def notification(kind):
 
 
 @cli.command()
-@click.argument('project')
-@click.argument('kind')
+@click.argument("project")
+@click.argument("kind")
 def addcheck(project, kind):
     cfg = DeployConfig.load()
     cfg.get_project(project).checks.append(create_configurable(Check, kind))

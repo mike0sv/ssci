@@ -4,7 +4,6 @@ from functools import cached_property
 from typing import List
 
 from git import Remote, Repo
-
 from ssci.runtime.checks.base import Check
 from ssci.runtime.conf import Runtime
 
@@ -13,7 +12,7 @@ from ssci.runtime.conf import Runtime
 class Deployment:
     repo_url: str
     build_cmd: str
-    branch: str = 'main'
+    branch: str = "main"
     project_name: str = None
     add_dir: str = None
     dind: bool = False
@@ -26,9 +25,10 @@ class Deployment:
     def url(self):
         if self.key_file is not None:
             from ssci.cli.github import host_name
+
             owner, name = os.path.split(self.repo_url)
             _, owner = os.path.split(owner)
-            return f'git@{host_name(self)}:{owner}/{name}'
+            return f"git@{host_name(self)}:{owner}/{name}"
         return self.repo_url
 
     @property
@@ -52,7 +52,7 @@ class Deployment:
         return self.repo.head.commit.hexsha[:8]
 
     def run_checks(self):
-        remote: Remote = self.repo.remote('origin')
+        remote: Remote = self.repo.remote("origin")
         remote.update()
         commit = remote.refs[0].commit.hexsha
         for check in self.checks:
