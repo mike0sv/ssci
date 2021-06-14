@@ -4,8 +4,8 @@ from typing import List
 
 try:
     from functools import cached_property
-except ImportError:  # FIXME
-    cached_property = property
+except ImportError:  # python < 3.8 compatibility
+    from cached_property import cached_property
 
 import yaml
 from decleverett import Config, Param

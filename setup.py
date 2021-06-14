@@ -9,6 +9,7 @@ REQUIREMENTS = [
     "pyyaml<6.0.0",
     "Jinja2<4",
     "docker<6",
+    "cached_property; python_version < '3.8'",
 ]
 
 config = dict(
