@@ -1,6 +1,11 @@
 import os
-from functools import cached_property, lru_cache
+from functools import lru_cache
 from typing import List
+
+try:
+    from functools import cached_property
+except ImportError:  # FIXME
+    cached_property = property
 
 import yaml
 from decleverett import Config, Param
