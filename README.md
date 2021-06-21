@@ -5,6 +5,8 @@ Little CLI tool to poll for changes in remote git repo, pull and run any commad 
 
 Also it can run as a daemon docker container that continuosly does exactly the same.
 
+Installation: `pip install ssci`
+
 ## Usage
 
 To configure new project, run `ssci new`. It will interactively ask you for repo url, branch to use and so on.
