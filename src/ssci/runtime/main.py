@@ -82,10 +82,13 @@ def check_rebuild_marker(config: DeployConfig):
 
 def run_loop(config: DeployConfig):
     while True:
-        for project in config.projects:
-            check_new_commits(project, config.notifier)
+        try:
+            for project in config.projects:
+                check_new_commits(project, config.notifier)
 
-        check_rebuild_marker(config)
+            check_rebuild_marker(config)
+        except Exception as e:
+            print(f"Error: {e.__class__} {e.args}")
         time.sleep(SSCIConf.TIMEOUT)
 
 

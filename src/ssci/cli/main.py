@@ -3,4 +3,4 @@ import click
 
 @click.group()
 def cli():
-    pass
+    """Main CLI entrypoint"""

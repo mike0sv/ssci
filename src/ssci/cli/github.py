@@ -12,7 +12,7 @@ from .utils import with_project
 
 @cli.group()
 def github():
-    pass
+    """Help with adding github deploy key authentication"""
 
 
 def key_path(project, public=False):
@@ -28,6 +28,7 @@ def host_name(project):
 @github.command()
 @with_project(True, True)
 def gen(cfg: DeployConfig, project: Deployment):
+    """Generate new pair of keys for project"""
     path = key_path(project)
     if os.path.exists(path):
         click.echo(f"Key already exists at {path}")
@@ -52,6 +53,7 @@ def gen(cfg: DeployConfig, project: Deployment):
 @github.command()
 @with_project(True)
 def pub(project: Deployment):
+    """Print projets public key"""
     path = key_path(project, True)
     if not os.path.exists(path):
         click.echo(
@@ -66,8 +68,14 @@ def pub(project: Deployment):
 
 @github.command()
 @with_project(True)
-@click.option("-c", "--config_path", default=os.path.expanduser("~/.ssh/config"))
+@click.option(
+    "-c",
+    "--config-path",
+    default=os.path.expanduser("~/.ssh/config"),
+    help="Path to SSH config",
+)
 def patch(project: Deployment, config_path: str):
+    """Add github key to SSH config"""
     conf = f"""
 Host {host_name(project)}
     HostName {urlparse(project.repo_url).netloc}

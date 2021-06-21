@@ -13,6 +13,7 @@ from .utils import get_project
 @cli.command()
 @click.argument("project", default="")
 def pull(project):
+    """Pull one or all projects"""
     cfg = DeployConfig.load()
     if project == "":
         click.echo("Going to pull all projects")
@@ -30,6 +31,9 @@ def pull(project):
 @cli.command()
 @click.argument("project", default="")
 def readd(project):
+    """Re-run copying addtional files for one or all projects
+    Warning - does not check if project is currently running
+    """
     cfg = DeployConfig.load()
     # FIXME check if stopped
     if project == "":
@@ -46,6 +50,9 @@ def readd(project):
 @cli.command()
 @click.argument("project", default="")
 def clean(project):
+    """Remove one or all projects repos
+    Warning - does not check if project is currently running
+    """
     # FIXME check if stopped
     if project == "":
         click.echo("Cleaning all projects")

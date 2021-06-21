@@ -32,6 +32,7 @@ def load_save_config():
 
 @cli.command()
 def config():
+    """Print current ssci config"""
     cfg = DeployConfig.load()
     pprint(cfg)
 
@@ -40,6 +41,7 @@ def config():
 @click.argument("option")
 @click.argument("value")
 def set(option, value):
+    """Set config option to new value"""
     with load_save_config() as data:
         get = data.get("ssci", {})
         get[option] = value
@@ -48,6 +50,7 @@ def set(option, value):
 
 @cli.command()
 def new():
+    """Initiate new ssci deployment in interactive mode"""
     cfg = DeployConfig.load()
 
     repo_url = click.prompt("Remote git repo url?")
@@ -80,6 +83,7 @@ def new():
 @cli.command()
 @click.argument("project")
 def remove(project):
+    """Remove deployment project"""
     cfg = DeployConfig.load()
     index = get_project(project, index=True)
     cfg.projects.pop(index)
@@ -91,6 +95,7 @@ def remove(project):
 @click.argument("project")
 @click.argument("branch")
 def switch(project, branch):
+    """Switch project branch"""
     cfg = DeployConfig.load()
     p = get_project(project)
     click.echo(f"Switched project {project} to branch {branch}")
@@ -101,6 +106,7 @@ def switch(project, branch):
 @cli.command()
 @click.argument("project", default="")
 def show(project):
+    """Print one or all projects configuration"""
     cfg = DeployConfig.load()
 
     if project == "":
@@ -134,6 +140,7 @@ def create_configurable(cls: Type[Configurable], kind):
 @cli.command()
 @click.argument("kind", default="telegram")
 def notification(kind):
+    """Add new notification destination"""
     cfg = DeployConfig.load()
 
     cfg.notifications.append(create_configurable(Notifier, kind))
@@ -144,6 +151,7 @@ def notification(kind):
 @click.argument("project")
 @click.argument("kind")
 def addcheck(project, kind):
+    """Add new check to project"""
     cfg = DeployConfig.load()
     cfg.get_project(project).checks.append(create_configurable(Check, kind))
     cfg.save()

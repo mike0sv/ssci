@@ -9,14 +9,15 @@ from ssci.runtime.notifications.base import Notifier
 
 
 @contextlib.contextmanager
-def print_git_error():
+def print_git_error(reraise=True):
     try:
         yield
     except GitCommandError as e:
         logger.info("FAILED")
         logger.info("stdout %s", e.stdout)
         logger.info("stderr %s", e.stderr)
-        raise
+        if reraise:
+            raise
 
 
 def check_new_commits(deployment: Deployment, notifier: Notifier):
