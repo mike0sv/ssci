@@ -1,0 +1,13 @@
+FROM python:3.8-alpine
+
+RUN apk add --no-cache git docker-compose docker
+
+WORKDIR /src
+
+COPY setup.py .
+RUN pip install $(python -c "from setup import REQUIREMENTS; print(' '.join(REQUIREMENTS))")
+COPY src ./src
+RUN pip install . && rm -rf /src
+
+WORKDIR /app
+CMD ssci run

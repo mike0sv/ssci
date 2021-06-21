@@ -8,13 +8,13 @@ release: docker_build docker_push output
 
 # Image and binary can be overidden with env vars.
 DOCKER_IMAGE ?= mike0sv/ssci
-SOURCES_DIR ?= ssci
+SOURCES_DIR ?= .
 
 # Get the latest commit.
 GIT_COMMIT = $(strip $(shell git rev-parse --short HEAD))
 
 # Get the version number from the code
-CODE_VERSION = $(strip $(shell cat VERSION))
+CODE_VERSION = $(strip $(shell cat .bumpversion.cfg | grep "current_version = " | cut -f 3 -d " "))
 
 # Find out if the working directory is clean
 GIT_NOT_CLEAN_CHECK = $(shell git status --porcelain)
@@ -46,6 +46,12 @@ else
 # Add the commit ref for development builds. Mark as dirty if the working directory isn't clean
 DOCKER_TAG = $(CODE_VERSION)-$(GIT_COMMIT)$(DOCKER_TAG_SUFFIX)
 endif
+
+docker_local:
+	# Build Docker image
+	docker build \
+  -f Dockerfile.dev \
+  -t $(DOCKER_IMAGE):latest ${SOURCES_DIR}
 
 docker_build:
 	# Build Docker image

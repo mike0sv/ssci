@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  ssci:
+    image: mike0sv/ssci:latest
+    container_name: ssci_{{ service_name }}
+    restart: unless-stopped
+    environment:
+      - HOST_DIR={{host_dir}}
+    volumes:
+      - ./{{keys}}:/app/{{keys}}
+      - {{abs_conf}}:/app/{{conf}}
+      - {{repo}}:{{repo}}{% if dind %}
+      - /var/run/docker.sock:/var/run/docker.sock{%endif%}{% for project in projects %}{% if project.add_dir is not none %}
+      - {{project.add_abs}}:/add/{{project.name}}{%endif%}{%endfor%}

@@ -14,11 +14,10 @@ LABEL maintainer="mike0sv@gmail.com"
 
 RUN apk add --no-cache git docker-compose docker
 
+WORKDIR /src
+COPY setup.py .
+COPY src ./src
+RUN pip install . && rm -rf /src
+
 WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY *.py .
-
-CMD python -u ssci.py
+CMD ssci run

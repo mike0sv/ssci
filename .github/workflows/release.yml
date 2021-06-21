@@ -5,8 +5,38 @@ on:
     types: [ published ]
 
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - uses: pre-commit/action@v2.0.0
+
+  publish_to_pypi:
+    name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+    runs-on: [ ubuntu-latest ]
+    needs: [ pre-commit ]
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: install reqs
+        run: pip install twine wheel
+      - name: build
+        run: python setup.py bdist bdist_wheel
+      - name: upload
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
   build_and_pub:
     runs-on: [ ubuntu-latest ]
+    needs: [ pre-commit ]
     steps:
       - name: Login to docker.io
         run: echo ${{ secrets.DOCKER_PWD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
