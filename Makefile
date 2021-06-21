@@ -14,7 +14,7 @@ SOURCES_DIR ?= .
 GIT_COMMIT = $(strip $(shell git rev-parse --short HEAD))
 
 # Get the version number from the code
-CODE_VERSION = $(strip $(shell cat VERSION))
+CODE_VERSION = $(strip $(shell cat .bumpversion.cfg | grep "current_version = " | cut -f 3 -d " "))
 
 # Find out if the working directory is clean
 GIT_NOT_CLEAN_CHECK = $(shell git status --porcelain)
