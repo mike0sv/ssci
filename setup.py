@@ -14,7 +14,7 @@ REQUIREMENTS = [
 
 config = dict(
     name="ssci",
-    version="0.2.0",
+    version="0.2.1",
     packages=find_packages("src"),
     package_dir={"": "src"},
     include_package_data=True,
