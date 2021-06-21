@@ -1,44 +1,45 @@
 # ssci
-Shit&amp;Sticks CI
+### Shit&amp;Sticks CI
 
-Little tool to poll for changes in remote git repo, pull and run any commad after update.
-docker and docker-compose are avaliable to use, if you need something else, feel free to use this as a base image.
+Little CLI tool to poll for changes in remote git repo, pull and run any commad after update.
 
-Everything can be configured via env variables.
+Also it can run as a daemon docker container that continuosly does exactly the same.
 
-To run ssci use example docker-compose
-```
-version: "3.7"
+## Usage
 
-services:
-  ssci:
-    image: mike0sv/ssci:latest
-    restart: unless-stopped
-    env_file:
-      - template.env
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./repo:${PWD}/repo
+To configure new project, run `ssci new`. It will interactively ask you for repo url, branch to use and so on.
 
- ```
+This config will be saved into `ssci.yaml` file, that you can change later via cli or manually
+Project parameters are:
+- `repo_url`: url to git repository
+- `build_cmd`: command to run after each pull. It should stop previous instances if needed, for example "docker-compose up -d --build --remove-orphans" if you use compose
+- `branch`: git branch to track
+- `project_name`: uummm you can guess this one
+- `add_dir`: directory with additional files, that should be copied after clone (for example, .env file with secrets)
+- `dind`: enable dind for build (needed if you use docker/compose for build)
+- `checks`: list of checks needed to start build after each pull (for example, wait for gitlab pipelene to succeed)
+- `key_file`: deploy secret key file for github
+- `build_detached`: set to true if your build command blocks
+- `build_detched_timeout`: time to wait on detached build to confirm successfull startup
 
- or this one-liner
+Then, run `ssci dc start` to run ssci docker daemon
 
- ```
- docker run --name ssci --restart=unless-stopped --env-file template.env -e HOST_DIR=$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd)/repo:$(pwd)/repo mike0sv/ssci:latest
- ```
+### Other features
 
- # Config envs
+#### Notifiacations
+You can add target for notifications with interactive `ssci notification`
 
-- HOST_DIR - used to replicate absolute repo path inside container, set it to `${PWD}` in env file for compose or to `$(pwd)` in docker run
-- REPO_URL - git remote url to poll
-- REPO_BRANCH - git branch, default master
-- BUILD_CMD - command to run after each pull, for example `docker-compose up --build -d`
-- TELEGRAM_TOKEN - telegram bot token to send notifications
-- TELEGRAM_CHATS - comma-separated list of telegram chats
+As of 0.2.0, only telegram implemented
 
-# Volumes
+#### Github authorization
+Easy configure github token with `ssci github` commands
+- `gen`    Generate new pair of keys for project
+- `patch`  Add github key to SSH config
+- `pub`    Print projets public key
 
-- /var/run/docker.sock - mount it, if you plan on using docker in your build cmd
-- $(pwd)/repo:$(pwd)/repo - mount it, if your docker containers mount files from your repo
-- anything mounted to /add will be copied into repo after pull
+#### Checks
+Add new check with `ssci addcheck`
+As of 0.2.0, only github pipeline check implemented
+
+#### Manual rebuild
+Run `ssci rebuild <project>` to trigger manual rebuild
