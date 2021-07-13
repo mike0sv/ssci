@@ -16,7 +16,7 @@ OPTIONAL_REQUIREMENTS = [
 ]
 config = dict(
     name="ssci",
-    version="0.2.1",
+    version="0.2.2",
     packages=find_packages("src"),
     package_dir={"": "src"},
     include_package_data=True,
