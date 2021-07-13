@@ -3,6 +3,7 @@ import subprocess
 from urllib.parse import urlparse
 
 import click
+from click import Context
 
 from ..config import DeployConfig, SSCIConf
 from ..deployment import Deployment
@@ -80,12 +81,14 @@ def patch(project: Deployment, config_path: str):
 Host {host_name(project)}
     HostName {urlparse(project.repo_url).netloc}
     IdentityFile {os.path.abspath(key_path(project))}
+    StrictHostKeyChecking no
     """
     try:
-        with open(config_path, "r") as f:
-            if conf in f.read():
-                click.echo("Your config already patched")
-                return
+        if os.path.exists(config_path):
+            with open(config_path, "r") as f:
+                if conf in f.read():
+                    click.echo("Your config already patched")
+                    return
         with open(config_path, "a") as f:
             f.write(conf)
         click.echo("Success")
@@ -94,3 +97,19 @@ Host {host_name(project)}
         click.echo("-" * 10)
         click.echo(conf)
         click.echo("-" * 10)
+
+
+@github.command()
+@click.pass_context
+@click.option(
+    "-c",
+    "--config-path",
+    default=os.path.expanduser("~/.ssh/config"),
+    help="Path to SSH config",
+)
+def patchall(ctx: Context, config_path):
+    cfg = DeployConfig.load()
+    for proj in cfg.projects:
+        if proj.key_file is None:
+            continue
+        ctx.invoke(patch, project=proj.name, config_path=config_path)

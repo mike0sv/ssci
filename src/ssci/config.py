@@ -14,12 +14,14 @@ from pyjackson import deserialize, serialize
 from pyjackson.decorators import make_string
 from ssci.deployment import Deployment
 from ssci.runtime.notifications.base import MultiNotifier, Notifier
+from ssci.version import __version__
 
 
 class SSCIConf(Config):
     namespace = "ssci"
     CONFIG_PATH = Param(default="ssci.yaml")
-    COMPOSE_FILE = Param(default="docker-compose.yml")
+    COMPOSE_FILE = Param(default="ssci-docker-compose.yml")
+    IMAGE = Param(default=f"mike0sv/ssci:{__version__}")
     TIMEOUT = Param(parser=float, default="5.")
     REBUILD_MARKER = Param(default=".rebuild")
     SERVICE_NAME = Param(default=os.path.basename(os.path.abspath(".")))

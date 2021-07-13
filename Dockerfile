@@ -12,12 +12,12 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 LABEL maintainer="mike0sv@gmail.com"
 
 
-RUN apk add --no-cache git docker-compose docker
-
+RUN apk add --no-cache git docker-compose docker openssh
+RUN mkdir ~/.ssh && touch ~/.ssh/config
 WORKDIR /src
 COPY setup.py .
 COPY src ./src
 RUN pip install . && rm -rf /src
 
 WORKDIR /app
-CMD ssci run
+CMD ssci github patchall && ssci run

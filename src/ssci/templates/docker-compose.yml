@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   ssci:
-    image: mike0sv/ssci:latest
+    image: {{ image }}
     container_name: ssci_{{ service_name }}
     restart: unless-stopped
     environment:

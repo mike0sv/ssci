@@ -9,9 +9,11 @@ REQUIREMENTS = [
     "pyyaml<6.0.0",
     "Jinja2<4",
     "docker<6",
+    "python-gitlab<3",
+]
+OPTIONAL_REQUIREMENTS = [
     "cached_property; python_version < '3.8'",
 ]
-
 config = dict(
     name="ssci",
     version="0.2.1",
@@ -23,7 +25,7 @@ config = dict(
     author="mike0sv",
     author_email="mike0sv@gmail.com",
     description="Shit&Sticks CI",
-    install_requires=REQUIREMENTS,
+    install_requires=REQUIREMENTS + OPTIONAL_REQUIREMENTS,
     extras_require={},
     package_data={"ssci": ["templates/*"]},
     test_suite="pytest",

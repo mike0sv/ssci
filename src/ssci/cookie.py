@@ -19,4 +19,5 @@ def render(cfg: DeployConfig):
         abs_conf=os.path.abspath(SSCIConf.CONFIG_PATH),
         conf=SSCIConf.CONFIG_PATH,
         keys=SSCIConf.KEYS_DIR,
+        image=SSCIConf.IMAGE,
     )
